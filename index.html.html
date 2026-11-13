@@ -1,0 +1,660 @@
+<div class="lymph-widget" id="lymphWidget">
+    <style>
+        .lymph-widget {
+            position: relative;
+            background: rgba(240, 244, 255, 0.7);
+            border: 1px solid rgba(197, 202, 233, 0.8);
+            border-radius: 24px;
+            padding: 25px;
+            max-width: 500px;
+            margin: 20px auto;
+            box-shadow: 0 10px 30px rgba(26, 35, 126, 0.05);
+            font-family: 'Arial', sans-serif;
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+        
+        .lymph-widget::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -50%;
+            width: 200%; height: 100%;
+            background: 
+                radial-gradient(circle at 10% 30%, rgba(255, 255, 255, 0.4) 3px, transparent 4px),
+                radial-gradient(circle at 80% 20%, rgba(100, 181, 246, 0.4) 4px, transparent 5px),
+                radial-gradient(circle at 50% 100%, rgba(63, 81, 181, 0.2) 0%, transparent 60%);
+            animation: slowWaveMove 10s ease-in-out infinite alternate;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes slowWaveMove {
+            0% { transform: translateX(0) scaleY(1); }
+            100% { transform: translateX(-15%) scaleY(1.05); }
+        }
+        
+        .lymph-widget h3 {
+            position: relative;
+            color: #1a237e;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: 800;
+            font-size: 22px;
+            z-index: 10;
+        }
+
+        .month-selector {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            z-index: 10;
+            background: rgba(255,255,255,0.5);
+            border-radius: 10px;
+            padding: 5px;
+        }
+        .month-selector span {
+            font-weight: 800;
+            color: #1a237e;
+            font-size: 16px;
+        }
+        .month-btn {
+            background: #1a237e;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .month-btn:hover { background: #0d47a1; }
+
+        .lymph-inputs {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+            z-index: 10;
+        }
+
+        .lymph-inputs label {
+            color: #1a237e;
+            font-weight: 600;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .lymph-inputs input {
+            padding: 10px 15px;
+            border: 2px solid #c5cae9;
+            border-radius: 12px;
+            outline: none;
+            color: #1a237e;
+            font-size: 15px;
+            background: #ffffff;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .lymph-inputs input:focus {
+            border-color: #1a237e;
+            box-shadow: 0 0 10px rgba(26, 35, 126, 0.1);
+        }
+
+        /* Кнопка тренировки */
+        .toggle-train-btn {
+            background: #e8eaf6;
+            color: #1a237e;
+            border: 2px solid #c5cae9;
+            padding: 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .toggle-train-btn.active {
+            background: #1a237e;
+            color: #ffffff;
+            border-color: #1a237e;
+        }
+
+        .water-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        .water-bar-fill {
+            height: 100%;
+            background: #42a5f5;
+            width: 0%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .lymph-result {
+            position: relative;
+            text-align: left;
+            font-size: 13px;
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 10;
+            line-height: 1.5;
+            border-left: 4px solid #1a237e;
+        }
+
+        .status-optimal { color: #2e7d32; font-weight: bold; }
+        .status-stop { color: #ff8f00; font-weight: bold; }
+        .status-stagnation { color: #c62828; font-weight: bold; }
+
+        .calendar-header {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: 700;
+            color: #5c6bc0;
+            margin-bottom: 8px;
+            font-size: 11px;
+            z-index: 10;
+        }
+
+        .calendar-grid {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 15px;
+            z-index: 10;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 13px;
+            color: #333;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+            border: 2px solid transparent; 
+        }
+
+        .calendar-day:hover { background: rgba(197, 202, 233, 0.3); }
+        .calendar-day.empty { background: transparent; cursor: default; }
+        
+        /* Выбранный день (на который мы вводим данные) */
+        .calendar-day.selected { 
+            border: 2px solid #1a237e; 
+            font-weight: 800; 
+            box-shadow: 0 0 0 2px #fff inset; /* Чтобы выделить на фоне */
+        }
+
+        .calendar-day.trained {
+            background: #1a237e !important;
+            color: #ffffff !important;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(26, 35, 126, 0.4);
+        }
+
+        .calendar-day.trained.selected {
+            border: 3px solid #fff !important;
+            outline: 2px solid #1a237e;
+        }
+
+        .calendar-day.calc-optimal { background: #e8f5e9; color: #2e7d32; }
+        .calendar-day.calc-stop { background: #fff8e1; color: #ff8f00; }
+        .calendar-day.calc-stagnation { background: #ffebee; color: #c62828; }
+        
+        .calendar-day.today { border: 2px dashed #1a237e; font-weight: 800; }
+        .calendar-day.today.selected { border: 2px solid #1a237e; }
+
+        .calendar-legend {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            font-size: 10px;
+            color: #666;
+            font-weight: 600;
+            z-index: 10;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .legend-item { display: flex; align-items: center; gap: 4px; }
+        .color-box { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        .optimal-bg { background: #e8f5e9; border: 1px solid #a5d6a7; }
+        .stop-bg { background: #fff8e1; border: 1px solid #ffe082; }
+        .stagnation-bg { background: #ffebee; border: 1px solid #ef9a9a; }
+        .trained-bg { background: #1a237e; }
+
+        /* История */
+        .history-section {
+            position: relative;
+            z-index: 10;
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 12px;
+            padding: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .history-section h4 {
+            margin: 0 0 10px 0;
+            color: #1a237e;
+            font-size: 14px;
+            text-align: center;
+        }
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        .history-table th, .history-table td {
+            padding: 5px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .history-table th {
+            color: #5c6bc0;
+            font-weight: 700;
+        }
+        .history-table td {
+            color: #333;
+        }
+
+        .reset-btn {
+            display: block;
+            width: 100%;
+            background: transparent;
+            border: 1px solid #c5cae9;
+            color: #666;
+            padding: 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+            position: relative;
+        }
+        .reset-btn:hover { background: #ffebee; color: #c62828; border-color: #ef9a9a; }
+    </style>
+
+    <h3>Трекер лимфотока</h3>
+    
+    <div class="month-selector">
+        <button class="month-btn" onclick="changeMonth(-1)">&#10094;</button>
+        <span id="month-year-display">Ноябрь 2026</span>
+        <button class="month-btn" onclick="changeMonth(1)">&#10095;</button>
+    </div>
+
+    <div class="lymph-inputs">
+        <div>
+            <label for="user-weight">Вес (кг):</label>
+            <input type="number" id="user-weight" min="30" max="150" placeholder="Введите вес" oninput="handleInput()">
+        </div>
+        <div>
+            <label for="water-intake">Выпито воды (литров):</label>
+            <input type="number" id="water-intake" min="0" max="5" step="0.1" placeholder="0.0" oninput="handleInput()">
+            <div class="water-bar-container">
+                <div class="water-bar-fill" id="water-bar"></div>
+            </div>
+            <div id="water-text" style="font-size: 11px; color: #666; margin-top: 5px;">Введите вес</div>
+        </div>
+        
+        <!-- Кнопка отметки тренировки -->
+        <button class="toggle-train-btn" id="train-btn" onclick="toggleTraining()">
+            <span id="train-btn-icon">⭕</span> Отметить день как тренировку
+        </button>
+    </div>
+
+    <div class="lymph-result" id="lymph-result">
+        Выберите день в календаре.
+    </div>
+
+    <div class="calendar-header">
+        <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+    </div>
+    
+    <div class="calendar-grid" id="lymph-calendar"></div>
+
+    <div class="calendar-legend">
+        <div class="legend-item"><span class="color-box trained-bg"></span> Тренировка</div>
+        <div class="legend-item"><span class="color-box optimal-bg"></span> Активный</div>
+        <div class="legend-item"><span class="color-box stop-bg"></span> Остановка</div>
+        <div class="legend-item"><span class="color-box stagnation-bg"></span> Застой</div>
+    </div>
+
+    <!-- История -->
+    <div class="history-section">
+        <h4>История записей</h4>
+        <table class="history-table" id="history-table">
+            <thead>
+                <tr><th>Дата</th><th>Вес</th><th>Вода</th><th>Тренировка</th></tr>
+            </thead>
+            <tbody id="history-body">
+                <!-- Заполняется скриптом -->
+            </tbody>
+        </table>
+    </div>
+
+    <button class="reset-btn" onclick="resetData()">Очистить все данные</button>
+</div>
+
+<script>
+    let trainedDates = [];
+    let dailyData = {}; 
+    
+    try {
+        const savedDates = localStorage.getItem('lymphTrainedDates');
+        if (savedDates) trainedDates = JSON.parse(savedDates);
+        
+        const savedDaily = localStorage.getItem('lymphDailyData');
+        if (savedDaily) dailyData = JSON.parse(savedDaily);
+    } catch(e) { console.log('Память заблокирована'); }
+
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    
+    let currentYear = today.getFullYear();
+    let currentMonth = today.getMonth();
+    let selectedDateStr = formatDate(today); 
+
+    const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+
+    function formatDate(date) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    }
+
+    function changeMonth(offset) {
+        currentMonth += offset;
+        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        else if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        renderCalendar();
+    }
+
+    function handleInput() {
+        const weight = document.getElementById('user-weight').value;
+        const water = document.getElementById('water-intake').value;
+        
+        if (!dailyData[selectedDateStr]) dailyData[selectedDateStr] = {};
+        dailyData[selectedDateStr].weight = weight;
+        dailyData[selectedDateStr].water = water;
+
+        saveToLocal();
+        updateWaterNorm();
+        renderHistory();
+    }
+
+    function toggleTraining() {
+        const index = trainedDates.indexOf(selectedDateStr);
+        if (index > -1) {
+            trainedDates.splice(index, 1); // Убираем
+        } else {
+            trainedDates.push(selectedDateStr); // Добавляем
+        }
+        saveToLocal();
+        renderCalendar(); 
+        calculateStatus();
+        renderHistory();
+        updateTrainBtn();
+    }
+
+    function saveToLocal() {
+        try {
+            localStorage.setItem('lymphTrainedDates', JSON.stringify(trainedDates));
+            localStorage.setItem('lymphDailyData', JSON.stringify(dailyData));
+        } catch(e) {}
+    }
+
+    function resetData() {
+        if (confirm('Удалить ВСЕ данные?')) {
+            try {
+                localStorage.removeItem('lymphTrainedDates');
+                localStorage.removeItem('lymphDailyData');
+            } catch(e) {}
+            trainedDates = [];
+            dailyData = {};
+            document.getElementById('user-weight').value = '';
+            document.getElementById('water-intake').value = '';
+            updateWaterNorm();
+            renderCalendar();
+            renderHistory();
+            updateTrainBtn();
+        }
+    }
+
+    function updateWaterNorm() {
+        const weight = parseFloat(document.getElementById('user-weight').value);
+        const waterIntake = parseFloat(document.getElementById('water-intake').value) || 0;
+        const bar = document.getElementById('water-bar');
+        const text = document.getElementById('water-text');
+
+        if (!weight || weight <= 0) {
+            text.innerHTML = "Введите вес";
+            bar.style.width = '0%';
+            bar.style.backgroundColor = '#e0e0e0';
+            return;
+        }
+
+        const norm = weight * 0.03; 
+        const upperLimit = norm + 0.2; 
+
+        let percent = (waterIntake / norm) * 100;
+        if (percent > 100) percent = 100;
+        bar.style.width = percent + '%';
+        
+        if (waterIntake < norm) {
+            bar.style.backgroundColor = '#42a5f5';
+            const remaining = (norm - waterIntake).toFixed(1);
+            text.innerHTML = `Норма: <b>${norm.toFixed(1)} л</b>. Еще: <b>${remaining} л</b>.`;
+        } 
+        else if (waterIntake >= norm && waterIntake <= upperLimit) {
+            bar.style.backgroundColor = '#2e7d32';
+            text.innerHTML = `<span style="color:#2e7d32; font-weight:bold;">Ровно норма (${norm.toFixed(1)} л).</span>`;
+        } 
+        else {
+            bar.style.backgroundColor = '#ff8f00';
+            const excess = (waterIntake - norm).toFixed(1);
+            text.innerHTML = `<span style="color:#ff8f00; font-weight:bold;">Перебор на ${excess} л.</span>`;
+        }
+
+        calculateStatus();
+    }
+
+    function calculateStatus() {
+        const weight = parseFloat(document.getElementById('user-weight').value);
+        const waterIntake = parseFloat(document.getElementById('water-intake').value) || 0;
+        const resultDiv = document.getElementById('lymph-result');
+
+        const selectedDate = new Date(selectedDateStr);
+        selectedDate.setHours(0,0,0,0);
+        
+        let lastTrainingDate = null;
+        const validTrainings = trainedDates.filter(d => new Date(d) <= selectedDate).sort((a,b) => new Date(b) - new Date(a));
+        
+        if (validTrainings.length > 0) {
+            lastTrainingDate = new Date(validTrainings[0]);
+        }
+
+        if (!lastTrainingDate) {
+            resultDiv.innerHTML = `<span class="status-stagnation">Нет тренировок до этой даты.</span>`;
+            return;
+        }
+
+        const diffTime = selectedDate - lastTrainingDate;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        let statusText = "";
+        let statusClass = "";
+        
+        const norm = weight ? weight * 0.03 : 0;
+        const waterDeficit = weight && (waterIntake < (norm * 0.7));
+
+        if (waterDeficit) {
+            statusText = "ЗАСТОЙ (Обезвоживание)";
+            statusClass = "status-stagnation";
+        } 
+        else if (diffDays <= 3) {
+            statusText = "Активный лимфоток";
+            statusClass = "status-optimal";
+        } 
+        else if (diffDays > 3 && diffDays <= 21) {
+            statusText = "Остановка лимфотока";
+            statusClass = "status-stop";
+        } 
+        else {
+            statusText = "ЗАСТОЙ ЛИМФЫ";
+            statusClass = "status-stagnation";
+        }
+
+        resultDiv.innerHTML = 
+            `<div>Статус: <span class="${statusClass}">${statusText}</span></div>`;
+    }
+
+    function updateTrainBtn() {
+        const btn = document.getElementById('train-btn');
+        if (trainedDates.includes(selectedDateStr)) {
+            btn.classList.add('active');
+            btn.innerHTML = '<span>✅</span> Это тренировочный день (нажмите, чтобы убрать)';
+        } else {
+            btn.classList.remove('active');
+            btn.innerHTML = '<span>⭕</span> Отметить как тренировку';
+        }
+    }
+
+    function renderCalendar() {
+        const calendarDiv = document.getElementById('lymph-calendar');
+        document.getElementById('month-year-display').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+        calendarDiv.innerHTML = '';
+
+        const firstDay = new Date(currentYear, currentMonth, 1);
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        let startDayOfWeek = firstDay.getDay();
+        startDayOfWeek = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1;
+
+        for (let i = 0; i < startDayOfWeek; i++) {
+            const emptyDiv = document.createElement('div');
+            emptyDiv.className = 'calendar-day empty';
+            calendarDiv.appendChild(emptyDiv);
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'calendar-day';
+            dayDiv.textContent = day;
+
+            const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const currentDate = new Date(currentYear, currentMonth, day);
+            
+            if (trainedDates.includes(dateStr)) {
+                dayDiv.classList.add('trained');
+            } 
+            else if (trainedDates.length > 0) {
+                let closestPastTrainingDiff = Infinity;
+                trainedDates.forEach(tDateStr => {
+                    const tDate = new Date(tDateStr);
+                    tDate.setHours(0,0,0,0);
+                    const diff = Math.floor((currentDate - tDate) / (1000 * 60 * 60 * 24));
+                    if (diff >= 0 && diff < closestPastTrainingDiff) closestPastTrainingDiff = diff;
+                });
+
+                if (closestPastTrainingDiff !== Infinity) {
+                    if (closestPastTrainingDiff <= 3) dayDiv.classList.add('calc-optimal');
+                    else if (closestPastTrainingDiff <= 21) dayDiv.classList.add('calc-stop');
+                    else dayDiv.classList.add('calc-stagnation');
+                }
+            }
+
+            if (dateStr === formatDate(today)) dayDiv.classList.add('today');
+            if (dateStr === selectedDateStr) dayDiv.classList.add('selected');
+
+            dayDiv.addEventListener('click', () => {
+                selectedDateStr = dateStr;
+                
+                if (dailyData[dateStr]) {
+                    document.getElementById('user-weight').value = dailyData[dateStr].weight || '';
+                    document.getElementById('water-intake').value = dailyData[dateStr].water || '';
+                } else {
+                    document.getElementById('user-weight').value = '';
+                    document.getElementById('water-intake').value = '';
+                    const keys = Object.keys(dailyData).sort();
+                    if (keys.length > 0) {
+                        const lastWeight = dailyData[keys[keys.length-1]].weight;
+                        if (lastWeight) document.getElementById('user-weight').value = lastWeight;
+                    }
+                }
+                
+                renderCalendar();
+                updateWaterNorm();
+                updateTrainBtn();
+            });
+            
+            calendarDiv.appendChild(dayDiv);
+        }
+    }
+
+    function renderHistory() {
+        const tbody = document.getElementById('history-body');
+        tbody.innerHTML = '';
+        
+        // Сортируем даты по убыванию
+        const keys = Object.keys(dailyData).sort((a,b) => new Date(b) - new Date(a));
+        
+        if (keys.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="color:#999;">Нет записей</td></tr>';
+            return;
+        }
+
+        keys.forEach(dateStr => {
+            const data = dailyData[dateStr];
+            const isTrained = trainedDates.includes(dateStr) ? '✅' : '—';
+            const dateFormatted = new Date(dateStr).toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit', year:'2-digit'});
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${dateFormatted}</td>
+                <td>${data.weight || '—'}</td>
+                <td>${data.water || '—'}</td>
+                <td>${isTrained}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        if (dailyData[selectedDateStr]) {
+            document.getElementById('user-weight').value = dailyData[selectedDateStr].weight || '';
+            document.getElementById('water-intake').value = dailyData[selectedDateStr].water || '';
+        }
+        
+        // Если тренировок нет, добавим сегодняшнюю для примера, чтобы цвета появились
+        if (trainedDates.length === 0) {
+            trainedDates.push(formatDate(today));
+            saveToLocal();
+        }
+
+        renderCalendar();
+        updateWaterNorm();
+        updateTrainBtn();
+        renderHistory();
+    });
+</script>

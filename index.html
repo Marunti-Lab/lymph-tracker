@@ -2,9 +2,16 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Эта строка делает шрифт нормальным на телефоне -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Трекер лимфотока</title>
+    
+    <!-- ПРЯМАЯ ССЫЛКА НА ИКОНКУ (НИЧЕГО ЗАГРУЖАТЬ НЕ НУЖНО) -->
+    <link rel="apple-touch-icon" href="https://i.ibb.co/6PZqXqz/icon.png">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/6PZqXqz/icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#1a237e">
+
     <style>
         body {
             margin: 0;
@@ -26,7 +33,6 @@
 <body>
 
     <div class="app-container">
-        <!-- НАЧАЛО ВАШЕГО ВИДЖЕТА -->
         <div class="lymph-widget" id="lymphWidget" style="width: 100%; max-width: 500px;">
             <style>
                 .lymph-widget {
@@ -71,6 +77,41 @@
                     z-index: 10;
                 }
 
+                /* ВКЛАДКИ */
+                .tabs-nav {
+                    position: relative;
+                    display: flex;
+                    justify-content: center;
+                    gap: 10px;
+                    margin-bottom: 20px;
+                    z-index: 10;
+                }
+                .tab-btn {
+                    background: rgba(255, 255, 255, 0.5);
+                    border: 1px solid #c5cae9;
+                    color: #1a237e;
+                    padding: 8px 20px;
+                    border-radius: 20px;
+                    font-weight: 700;
+                    font-size: 14px;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                }
+                .tab-btn.active {
+                    background: #1a237e;
+                    color: #fff;
+                    border-color: #1a237e;
+                    box-shadow: 0 4px 10px rgba(26, 35, 126, 0.2);
+                }
+                
+                .tab-content {
+                    display: none;
+                }
+                .tab-content.active {
+                    display: block;
+                }
+
+                /* КАЛЕНДАРЬ */
                 .month-selector {
                     position: relative;
                     display: flex;
@@ -82,105 +123,41 @@
                     border-radius: 10px;
                     padding: 5px;
                 }
-                .month-selector span {
-                    font-weight: 800;
-                    color: #1a237e;
-                    font-size: 16px;
-                }
+                .month-selector span { font-weight: 800; color: #1a237e; font-size: 16px; }
                 .month-btn {
-                    background: #1a237e;
-                    color: #fff;
-                    border: none;
-                    border-radius: 8px;
-                    width: 30px;
-                    height: 30px;
-                    cursor: pointer;
-                    font-weight: bold;
-                    transition: 0.3s;
+                    background: #1a237e; color: #fff; border: none; border-radius: 8px;
+                    width: 30px; height: 30px; cursor: pointer; font-weight: bold; transition: 0.3s;
                 }
                 .month-btn:hover { background: #0d47a1; }
 
                 .lymph-inputs {
-                    position: relative;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 10px;
-                    margin-bottom: 15px;
-                    z-index: 10;
+                    position: relative; display: flex; flex-direction: column; gap: 10px;
+                    margin-bottom: 15px; z-index: 10;
                 }
-
-                .lymph-inputs label {
-                    color: #1a237e;
-                    font-weight: 600;
-                    font-size: 13px;
-                    display: block;
-                    margin-bottom: 4px;
-                }
-
+                .lymph-inputs label { color: #1a237e; font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px; }
                 .lymph-inputs input {
-                    padding: 10px 15px;
-                    border: 2px solid #c5cae9;
-                    border-radius: 12px;
-                    outline: none;
-                    color: #1a237e;
-                    font-size: 15px;
-                    background: #ffffff;
-                    width: 100%;
-                    box-sizing: border-box;
+                    padding: 10px 15px; border: 2px solid #c5cae9; border-radius: 12px; outline: none;
+                    color: #1a237e; font-size: 15px; background: #ffffff; width: 100%; box-sizing: border-box;
                 }
-
-                .lymph-inputs input:focus {
-                    border-color: #1a237e;
-                    box-shadow: 0 0 10px rgba(26, 35, 126, 0.1);
-                }
+                .lymph-inputs input:focus { border-color: #1a237e; box-shadow: 0 0 10px rgba(26, 35, 126, 0.1); }
 
                 .toggle-train-btn {
-                    background: #e8eaf6;
-                    color: #1a237e;
-                    border: 2px solid #c5cae9;
-                    padding: 10px;
-                    border-radius: 12px;
-                    font-weight: 700;
-                    font-size: 13px;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 8px;
+                    background: #e8eaf6; color: #1a237e; border: 2px solid #c5cae9;
+                    padding: 10px; border-radius: 12px; font-weight: 700; font-size: 13px;
+                    cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
                 }
-                .toggle-train-btn.active {
-                    background: #1a237e;
-                    color: #ffffff;
-                    border-color: #1a237e;
-                }
+                .toggle-train-btn.active { background: #1a237e; color: #ffffff; border-color: #1a237e; }
 
                 .water-bar-container {
-                    width: 100%;
-                    height: 8px;
-                    background: #e0e0e0;
-                    border-radius: 4px;
-                    margin-top: 5px;
-                    overflow: hidden;
+                    width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px;
+                    margin-top: 5px; overflow: hidden;
                 }
-                .water-bar-fill {
-                    height: 100%;
-                    background: #42a5f5;
-                    width: 0%;
-                    transition: width 0.3s ease, background-color 0.3s ease;
-                }
+                .water-bar-fill { height: 100%; background: #42a5f5; width: 0%; transition: width 0.3s ease, background-color 0.3s ease; }
 
                 .lymph-result {
-                    position: relative;
-                    text-align: left;
-                    font-size: 13px;
-                    margin-bottom: 15px;
-                    padding: 12px;
-                    border-radius: 12px;
-                    background: rgba(255, 255, 255, 0.8);
-                    z-index: 10;
-                    line-height: 1.5;
-                    border-left: 4px solid #1a237e;
+                    position: relative; text-align: left; font-size: 13px; margin-bottom: 15px;
+                    padding: 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.8);
+                    z-index: 10; line-height: 1.5; border-left: 4px solid #1a237e;
                 }
 
                 .status-optimal { color: #2e7d32; font-weight: bold; }
@@ -188,82 +165,33 @@
                 .status-stagnation { color: #c62828; font-weight: bold; }
 
                 .calendar-header {
-                    position: relative;
-                    display: grid;
-                    grid-template-columns: repeat(7, 1fr);
-                    text-align: center;
-                    font-weight: 700;
-                    color: #5c6bc0;
-                    margin-bottom: 8px;
-                    font-size: 11px;
-                    z-index: 10;
+                    position: relative; display: grid; grid-template-columns: repeat(7, 1fr);
+                    text-align: center; font-weight: 700; color: #5c6bc0; margin-bottom: 8px; font-size: 11px; z-index: 10;
                 }
-
                 .calendar-grid {
-                    position: relative;
-                    display: grid;
-                    grid-template-columns: repeat(7, 1fr);
-                    gap: 4px;
-                    margin-bottom: 15px;
-                    z-index: 10;
+                    position: relative; display: grid; grid-template-columns: repeat(7, 1fr);
+                    gap: 4px; margin-bottom: 15px; z-index: 10;
                 }
-
                 .calendar-day {
-                    aspect-ratio: 1;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border-radius: 50%;
-                    font-size: 13px;
-                    color: #333;
-                    position: relative;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    user-select: none;
-                    border: 2px solid transparent; 
+                    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+                    border-radius: 50%; font-size: 13px; color: #333; position: relative; cursor: pointer;
+                    transition: all 0.2s; user-select: none; border: 2px solid transparent; 
                 }
-
                 .calendar-day:hover { background: rgba(197, 202, 233, 0.3); }
                 .calendar-day.empty { background: transparent; cursor: default; }
-                
-                .calendar-day.selected { 
-                    border: 2px solid #1a237e; 
-                    font-weight: 800; 
-                    box-shadow: 0 0 0 2px #fff inset; 
-                }
-
-                .calendar-day.trained {
-                    background: #1a237e !important;
-                    color: #ffffff !important;
-                    font-weight: bold;
-                    box-shadow: 0 2px 8px rgba(26, 35, 126, 0.4);
-                }
-
-                .calendar-day.trained.selected {
-                    border: 3px solid #fff !important;
-                    outline: 2px solid #1a237e;
-                }
-
+                .calendar-day.selected { border: 2px solid #1a237e; font-weight: 800; box-shadow: 0 0 0 2px #fff inset; }
+                .calendar-day.trained { background: #1a237e !important; color: #ffffff !important; font-weight: bold; box-shadow: 0 2px 8px rgba(26, 35, 126, 0.4); }
+                .calendar-day.trained.selected { border: 3px solid #fff !important; outline: 2px solid #1a237e; }
                 .calendar-day.calc-optimal { background: #e8f5e9; color: #2e7d32; }
                 .calendar-day.calc-stop { background: #fff8e1; color: #ff8f00; }
                 .calendar-day.calc-stagnation { background: #ffebee; color: #c62828; }
-                
                 .calendar-day.today { border: 2px dashed #1a237e; font-weight: 800; }
                 .calendar-day.today.selected { border: 2px solid #1a237e; }
 
                 .calendar-legend {
-                    position: relative;
-                    display: flex;
-                    justify-content: center;
-                    gap: 10px;
-                    font-size: 10px;
-                    color: #666;
-                    font-weight: 600;
-                    z-index: 10;
-                    flex-wrap: wrap;
-                    margin-bottom: 15px;
+                    position: relative; display: flex; justify-content: center; gap: 10px; font-size: 10px;
+                    color: #666; font-weight: 600; z-index: 10; flex-wrap: wrap; margin-bottom: 15px;
                 }
-
                 .legend-item { display: flex; align-items: center; gap: 4px; }
                 .color-box { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
                 .optimal-bg { background: #e8f5e9; border: 1px solid #a5d6a7; }
@@ -271,116 +199,100 @@
                 .stagnation-bg { background: #ffebee; border: 1px solid #ef9a9a; }
                 .trained-bg { background: #1a237e; }
 
+                /* ИСТОРИЯ */
                 .history-section {
-                    position: relative;
-                    z-index: 10;
-                    margin-bottom: 15px;
-                    background: rgba(255,255,255,0.6);
-                    border-radius: 12px;
-                    padding: 10px;
-                    max-height: 150px;
-                    overflow-y: auto;
+                    position: relative; z-index: 10; background: rgba(255,255,255,0.6);
+                    border-radius: 12px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);
                 }
-                .history-section h4 {
-                    margin: 0 0 10px 0;
-                    color: #1a237e;
-                    font-size: 14px;
-                    text-align: center;
-                }
-                .history-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    font-size: 12px;
-                }
-                .history-table th, .history-table td {
-                    padding: 5px;
-                    text-align: center;
-                    border-bottom: 1px solid #e0e0e0;
-                }
-                .history-table th {
-                    color: #5c6bc0;
-                    font-weight: 700;
-                }
-                .history-table td {
-                    color: #333;
-                }
+                .history-section h4 { margin: 0 0 15px 0; color: #1a237e; font-size: 16px; text-align: center; }
+                .history-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+                .history-table th, .history-table td { padding: 8px 5px; text-align: center; border-bottom: 1px solid #e0e0e0; }
+                .history-table th { color: #5c6bc0; font-weight: 700; }
+                .history-table td { color: #333; }
 
                 .reset-btn {
-                    display: block;
-                    width: 100%;
-                    background: transparent;
-                    border: 1px solid #c5cae9;
-                    color: #666;
-                    padding: 8px;
-                    border-radius: 10px;
-                    font-size: 12px;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                    z-index: 10;
-                    position: relative;
+                    display: block; width: 100%; background: transparent; border: 1px solid #c5cae9;
+                    color: #666; padding: 8px; border-radius: 10px; font-size: 12px; cursor: pointer;
+                    transition: all 0.3s; z-index: 10; position: relative; margin-top: 15px;
                 }
                 .reset-btn:hover { background: #ffebee; color: #c62828; border-color: #ef9a9a; }
             </style>
 
             <h3>Трекер лимфотока</h3>
-            
-            <div class="month-selector">
-                <button class="month-btn" onclick="changeMonth(-1)">&#10094;</button>
-                <span id="month-year-display">Ноябрь 2026</span>
-                <button class="month-btn" onclick="changeMonth(1)">&#10095;</button>
+
+            <div class="tabs-nav">
+                <button class="tab-btn active" onclick="switchTab('calendar-tab', this)">Календарь</button>
+                <button class="tab-btn" onclick="switchTab('history-tab', this)">История</button>
             </div>
 
-            <div class="lymph-inputs">
-                <div>
-                    <label for="user-weight">Вес (кг):</label>
-                    <input type="number" id="user-weight" min="30" max="150" placeholder="Введите вес" oninput="handleInput()">
+            <div id="calendar-tab" class="tab-content active">
+                <div class="month-selector">
+                    <button class="month-btn" onclick="changeMonth(-1)">&#10094;</button>
+                    <span id="month-year-display">Ноябрь 2026</span>
+                    <button class="month-btn" onclick="changeMonth(1)">&#10095;</button>
                 </div>
-                <div>
-                    <label for="water-intake">Выпито воды (литров):</label>
-                    <input type="number" id="water-intake" min="0" max="5" step="0.1" placeholder="0.0" oninput="handleInput()">
-                    <div class="water-bar-container">
-                        <div class="water-bar-fill" id="water-bar"></div>
+
+                <div class="lymph-inputs">
+                    <div>
+                        <label for="user-weight">Вес (кг):</label>
+                        <input type="number" id="user-weight" min="30" max="150" placeholder="Введите вес" oninput="handleInput()">
                     </div>
-                    <div id="water-text" style="font-size: 11px; color: #666; margin-top: 5px;">Введите вес</div>
+                    <div>
+                        <label for="water-intake">Выпито воды (литров):</label>
+                        <input type="number" id="water-intake" min="0" max="5" step="0.1" placeholder="0.0" oninput="handleInput()">
+                        <div class="water-bar-container">
+                            <div class="water-bar-fill" id="water-bar"></div>
+                        </div>
+                        <div id="water-text" style="font-size: 11px; color: #666; margin-top: 5px;">Введите вес</div>
+                    </div>
+                    
+                    <button class="toggle-train-btn" id="train-btn" onclick="toggleTraining()">
+                        <span id="train-btn-icon">⭕</span> Отметить день как тренировку
+                    </button>
+                </div>
+
+                <div class="lymph-result" id="lymph-result">
+                    Выберите день в календаре.
+                </div>
+
+                <div class="calendar-header">
+                    <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
                 </div>
                 
-                <button class="toggle-train-btn" id="train-btn" onclick="toggleTraining()">
-                    <span id="train-btn-icon">⭕</span> Отметить день как тренировку
-                </button>
+                <div class="calendar-grid" id="lymph-calendar"></div>
+
+                <div class="calendar-legend">
+                    <div class="legend-item"><span class="color-box trained-bg"></span> Тренировка</div>
+                    <div class="legend-item"><span class="color-box optimal-bg"></span> Активный</div>
+                    <div class="legend-item"><span class="color-box stop-bg"></span> Остановка</div>
+                    <div class="legend-item"><span class="color-box stagnation-bg"></span> Застой</div>
+                </div>
             </div>
 
-            <div class="lymph-result" id="lymph-result">
-                Выберите день в календаре.
-            </div>
-
-            <div class="calendar-header">
-                <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
-            </div>
-            
-            <div class="calendar-grid" id="lymph-calendar"></div>
-
-            <div class="calendar-legend">
-                <div class="legend-item"><span class="color-box trained-bg"></span> Тренировка</div>
-                <div class="legend-item"><span class="color-box optimal-bg"></span> Активный</div>
-                <div class="legend-item"><span class="color-box stop-bg"></span> Остановка</div>
-                <div class="legend-item"><span class="color-box stagnation-bg"></span> Застой</div>
-            </div>
-
-            <div class="history-section">
-                <h4>История записей</h4>
-                <table class="history-table" id="history-table">
-                    <thead>
-                        <tr><th>Дата</th><th>Вес</th><th>Вода</th><th>Тренировка</th></tr>
-                    </thead>
-                    <tbody id="history-body">
-                    </tbody>
-                </table>
+            <div id="history-tab" class="tab-content">
+                <div class="history-section">
+                    <h4>Ваши записи</h4>
+                    <table class="history-table" id="history-table">
+                        <thead>
+                            <tr><th>Дата</th><th>Вес</th><th>Вода</th><th>Трен.</th></tr>
+                        </thead>
+                        <tbody id="history-body">
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <button class="reset-btn" onclick="resetData()">Очистить все данные</button>
         </div>
 
         <script>
+            function switchTab(tabId, btn) {
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+                btn.classList.add('active');
+            }
+
             let trainedDates = [];
             let dailyData = {}; 
             
@@ -641,7 +553,7 @@
                 const keys = Object.keys(dailyData).sort((a,b) => new Date(b) - new Date(a));
                 
                 if (keys.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="color:#999;">Нет записей</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" style="color:#999; padding: 20px;">Нет записей</td></tr>';
                     return;
                 }
 
@@ -678,7 +590,6 @@
                 renderHistory();
             });
         </script>
-        <!-- КОНЕЦ ВАШЕГО ВИДЖЕТА -->
     </div>
 
 </body>
